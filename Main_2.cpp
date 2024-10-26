@@ -1,4 +1,4 @@
-//±¾³ÌĞòÕë¶ÔWindows»·¾³¿ª·¢£¨conio.h£©
+//æœ¬ç¨‹åºé’ˆå¯¹Windowsç¯å¢ƒå¼€å‘ï¼ˆconio.hï¼‰
 #include <chrono>
 #include <thread>
 #include <iostream>
@@ -7,14 +7,15 @@
 #include <conio.h>
 #include <cstdlib>
 #include <ctime>
+#include <sstream>
 
-const long long map_y = 10; // µØÍ¼¿í¶È
-const long long map_x = 6;  // µØÍ¼¸ß¶È
-int y = 1, x = 1;           // Íæ¼ÒÆğÊ¼Î»ÖÃ
+
+long long map_x = 10, map_y = 10;
+int y = 1, x = 1;           // ç©å®¶èµ·å§‹ä½ç½®
 char ch;
 
-// µØÍ¼Êı×é
-char map[map_x][map_y + 1]; // ¼Ó1ÒÔ±ãÓÚ´æ´¢ '\0'
+// åœ°å›¾æ•°ç»„
+char map[999][999]; // åŠ 1ä»¥ä¾¿äºå­˜å‚¨ '\0'
 
 char Clear() {
 #ifdef _WIN32
@@ -26,64 +27,85 @@ char Clear() {
 #endif
 }
 
-// Ëæ»úÌî³äµØÍ¼
+// éšæœºå¡«å……åœ°å›¾
 void generate_Map() {
     Clear();
     std::cout << "Generating map..." << std::endl;
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-    std::srand(static_cast<unsigned int>(std::time(NULL))); // ÓÃµ±Ç°Ê±¼ä×÷ÎªËæ»úÖÖ×Ó
+    std::srand(static_cast<unsigned int>(std::time(NULL))); // ç”¨å½“å‰æ—¶é—´ä½œä¸ºéšæœºç§å­
     for (int i = 0; i < map_x; i++) {
         for (int j = 0; j < map_y; j++) {
             if (i == 0 || i == map_x - 1 || j == 0 || j == map_y - 1) {
-                map[i][j] = '#'; // ±ß½ç
+                map[i][j] = '#'; // è¾¹ç•Œ
             } else {
-                map[i][j] = (std::rand() % 4 == 0) ? '#' : ' '; // Ô¼25%¸ÅÂÊÎªÇ½±Ú
+                map[i][j] = (std::rand() % 4 == 0) ? '#' : ' '; // çº¦25%æ¦‚ç‡ä¸ºå¢™å£
             }
         }
-        map[i][map_y] = '\0'; // ½áÊø×Ö·û
+        map[i][map_y] = '\0'; // ç»“æŸå­—ç¬¦
     }
 
-    // Ëæ»úÉú³ÉÍæ¼ÒµÄÆğÊ¼Î»ÖÃ£¬²¢È·±£¸ÃÎ»ÖÃ²»±»Ç½±Ú¸²¸Ç
+    // éšæœºç”Ÿæˆç©å®¶çš„èµ·å§‹ä½ç½®ï¼Œå¹¶ç¡®ä¿è¯¥ä½ç½®ä¸è¢«å¢™å£è¦†ç›–
     do {
-        x = std::rand() % (map_x - 2) + 1; // ÏŞÖÆ·¶Î§ÔÚ 1 µ½ map_x-2
-        y = std::rand() % (map_y - 2) + 1; // ÏŞÖÆ·¶Î§ÔÚ 1 µ½ map_y-2
-    } while (map[x][y] == '#' || (x == 1 && y == 1)); // ÖØĞÂÑ¡ÔñÖ±µ½Ñ¡ÖĞÓĞĞ§Î»ÖÃ
+        x = std::rand() % (map_x - 2) + 1; // é™åˆ¶èŒƒå›´åœ¨ 1 åˆ° map_x-2
+        y = std::rand() % (map_y - 2) + 1; // é™åˆ¶èŒƒå›´åœ¨ 1 åˆ° map_y-2
+    } while (map[x][y] == '#' || (x == 1 && y == 1)); // é‡æ–°é€‰æ‹©ç›´åˆ°é€‰ä¸­æœ‰æ•ˆä½ç½®
 
-    map[x][y] = 'O'; // Íæ¼ÒÆğÊ¼Î»ÖÃ
+    map[x][y] = 'O'; // ç©å®¶èµ·å§‹ä½ç½®
 
-    // Ëæ»úÉú³ÉÖÕµãÎ»ÖÃ
+    // éšæœºç”Ÿæˆç»ˆç‚¹ä½ç½®
     int end_x, end_y;
     do {
         end_x = std::rand() % (map_x - 2) + 1;
         end_y = std::rand() % (map_y - 2) + 1;
-    } while (map[end_x][end_y] == '#' || (end_x == x && end_y == y)); // È·±£ÖÕµã²»ÔÚÇ½ÉÏ»òÍæ¼ÒÎ»ÖÃ
+    } while (map[end_x][end_y] == '#' || (end_x == x && end_y == y)); // ç¡®ä¿ç»ˆç‚¹ä¸åœ¨å¢™ä¸Šæˆ–ç©å®¶ä½ç½®
 
-    map[end_x][end_y] = '*'; // ÖÕµã
+    map[end_x][end_y] = '*'; // ç»ˆç‚¹
+    std::cout<<"Player position: x="<<x<<" y="<<y<<std::endl;
+    std::cout<<"End position: x="<<end_x<<" y="<<end_y<<std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
     Clear();
 }
 
 
-// ´òÓ¡µØÍ¼
+// æ‰“å°åœ°å›¾
 void print_Map() {
     for (int i = 0; i < map_x; i++) {
         puts(map[i]);
     }
 }
 
-// Ö÷³ÌĞò
-int main() {
-    std::cout << "W=UP, A=LEFT, S=DOWN, D=RIGHT, E=Regenerate map,Q=Exit" << std::endl;
+//void parseMapSize(const std::string& input) {
+//    std::istringstream iss(input);
+//    std::string key;
+//    while (iss >> key) {
+//        if (key.find("map_x=") == 0) {
+//            map_x = std::stoi(key.substr(6)); // æå–åé¢çš„æ•°å­—å¹¶è½¬æ¢ä¸ºæ•´æ•°
+//        }
+//        else if (key.find("map_y=") == 0) {
+//            map_y = std::stoi(key.substr(6)); // æå–åé¢çš„æ•°å­—å¹¶è½¬æ¢ä¸ºæ•´æ•°
+//        }
+//    }
+//}
+
+// ä¸»ç¨‹åº
+int main(){
+    //ä¼ å‚è¿›ä¸»å‡½æ•°ï¼Œæ˜¯éšæœºåœ°å›¾çš„é•¿å’Œå®½
+    //å–å‡ºå­—ç¬¦ä¸²ä¸­çš„æ•°å­—ï¼Œå¹¶èµ‹å€¼ç»™map_xå’Œmap_y
+    //"map_x=10 map_y=10"
+    //é‚£ä¹ˆmap_x
+    //// parseMapSize(argv);
+    std::cout << "W=Up, A=Left, S=Down, D=Right, E=Regenerate map,Q=Exit,I=Sitting" << std::endl;
     _getch();
     _getch();
     char w = 38, a = 39, s = 40, d = 39;
 MainProgram:
 
     Clear();
-    generate_Map(); // Éú³ÉËæ»úµØÍ¼
-    int c = 0, e = 0;
+    generate_Map(); // ç”Ÿæˆéšæœºåœ°å›¾
+    int c = 0, e = 0, longSteap = map_y+map_x;
     print_Map();
 
     while (true) {
@@ -93,66 +115,84 @@ MainProgram:
             Clear();
             std::cout << "Game Over! (:\nToo many restarts\nThis game is exiting..."<<std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
-            std::cout << "God-bye! £¨*£Ş-£Ş*£©";
+            std::cout << "God-bye! ï¼ˆ*ï¼¾-ï¼¾*ï¼‰";
             return 0;
-            //ÖØÀ´´ÎÊı¹ı¶à
+            //é‡æ¥æ¬¡æ•°è¿‡å¤š
         }
-        if (c >= 20) {
+        if (c > longSteap) {
             Clear();
-            //ÓÎÏ·²½Êı¹ı¶à
-            std::cout<<"Game over! \nGame steaps over 10. \nPlease restart the game."<<std::endl;
+            //æ¸¸æˆæ­¥æ•°è¿‡å¤š
+            std::cout<<"Game over! \nGame steaps over 20. \nPlease restart the game."<<std::endl;
             _getch();
             c = 0;
             //return 0;
             e++;
             goto MainProgram;
-            //ÇëÖØĞÂ¿ªÊ¼ÓÎÏ·
+            //è¯·é‡æ–°å¼€å§‹æ¸¸æˆ
         }
         if (ch == 'q' || ch == 'Q') {
             std::cout << "Exiting game..." << std::endl;
-            //ÔİÍ£Ò»ÏÂ
+            //æš‚åœä¸€ä¸‹
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
             return 0;
         }
-        // Íæ¼ÒÒÆ¶¯Âß¼­
-        if (ch == 'w' || ch == 'W' || ch == w ) { // ÏòÉÏ
+        if (ch == 'I' || ch == 'i') 
+            {
+                Clear();
+                printf("now map_x=%d map_y=%d\n",map_x,map_y);
+                printf("Now you are sitting.(map_x>1,and this<999 or map_y>1,and this<998)\n");
+                printf("map_x=");
+                //scanf("%d",&map_x);
+                std::cin >> map_x;
+                printf("map_y=");
+                //scanf("%d",&map_y);
+                std::cin >> map_y;
+                printf("Now map_x=%d map_y=%d\n",map_x,map_y);
+                _getch();
+                Clear();
+                goto MainProgram;
+                //ä¿®æ”¹åœ°å›¾å¤§å°
+            }
+        // ç©å®¶ç§»åŠ¨é€»è¾‘
+        if (ch == 'w' || ch == 'W' || ch == w ) { // å‘ä¸Š
             if (x > 1 && map[x - 1][y] != '#' && map[x - 1][y] != '*') {
                 map[x][y] = ' ';
                 x--;
                 map[x][y] = 'O';
             } else if (map[x - 1][y] == '*')
                 break;
-        } else if (ch == 'a' || ch == 'A' || ch == a) { // Ïò×ó
+        } else if (ch == 'a' || ch == 'A' || ch == a) { // å‘å·¦
             if (y > 1 && map[x][y - 1] != '#' && map[x][y - 1] != '*') {
                 map[x][y] = ' ';
                 y--;
                 map[x][y] = 'O';
             } else if (map[x][y - 1] == '*')
                 break;
-        } else if (ch == 's' || ch == 'S' || ch == s) { // ÏòÏÂ
+        } else if (ch == 's' || ch == 'S' || ch == s) { // å‘ä¸‹
             if (x < map_x - 2 && map[x + 1][y] != '#' && map[x + 1][y] != '*') {
                 map[x][y] = ' ';
                 x++;
                 map[x][y] = 'O';
             } else if (map[x + 1][y] == '*')
                 break;
-        } else if (ch == 'd' || ch == 'D' || ch == d ) { // ÏòÓÒ
+        } else if (ch == 'd' || ch == 'D' || ch == d ) { // å‘å³
             if (y < map_y - 1 && map[x][y + 1] != '#' && map[x][y + 1] != '*') {
                 map[x][y] = ' ';
                 y++;
                 map[x][y] = 'O';
             } else if (map[x][y + 1] == '*')
                 break;
-        } else if (ch == 'e' || ch == 'E') {
+        }
+        else if (ch == 'e' || ch == 'E') {
             goto MainProgram;
         }
 
-        // ÇåÆÁ²¢´òÓ¡µØÍ¼
+        // æ¸…å±å¹¶æ‰“å°åœ°å›¾
         Clear();
         print_Map();
     }
     Clear();
-    // Íæ¼ÒÊ¤Àû
+    // ç©å®¶èƒœåˆ©
     printf("You Win!");
     _getch();
     goto MainProgram;
