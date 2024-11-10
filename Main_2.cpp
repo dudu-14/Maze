@@ -20,25 +20,25 @@ char *Clear()
 {
 #ifdef __DEBUG__
     printf("\n\n\n\n");
-    return "Debug,No Clear";
+    return 'd';
 #endif
 
 #ifdef _WIN32
     system("cls");
-    return "Windows";
+    return 'W';
 #elif __linux__
     system("clear");
-    return "Linux";
+    return 'L';
 #elif __unix__
     system("clear");
-    return "UNIX";
+    return 'U';
 #elif __APPLE__
     system("clear");
-    return "Apple";
+    return 'A';
 #else
-    // ANSI
+    //ANSI
     printf("\033[2J");
-    return "Other";
+    return 'O';
 #endif
 }
 
